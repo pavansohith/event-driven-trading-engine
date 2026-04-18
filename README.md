@@ -17,8 +17,8 @@ This project is the result of that. It's a realistic (if simplified) model of a 
 ## Architecture
 
 The core idea: **the API gateway never touches Binance directly.** It accepts an order, writes a command to Redis, and immediately returns `202 PENDING`. The execution worker picks up the command, decrypts the user's API keys, signs and fires the Binance REST request, writes the result to PostgreSQL, and publishes a status event. The events service picks that up and pushes it to the right WebSocket connection. The browser gets the update in real time — no polling.
-![Event-Driven Architecture](./architecture.png)
 
+![Event-Driven Architecture](./architecture.png)
 
 ```mermaid
 flowchart LR
@@ -175,7 +175,7 @@ pnpm install
 
 Create `.env` files per service. See the [Environment variables](#environment-variables) table below for all required values.
 
-**Important:** The `events` service requires `FRONTEND_URL` for WebSocket origin validation. The default `docker-compose.yml` does not inject it for the events container — add it manually or it will fail to start.
+Note: The `events` service requires `FRONTEND_URL` for WebSocket origin validation. The default `docker-compose.yml` does not inject it for the `events` container — add it manually or it will fail to start.
 
 ### 3. Run the database migration
 
@@ -206,7 +206,7 @@ cd apps/web
 pnpm dev
 ```
 
-Set `NEXT_PUBLIC_API_URL=http://localhost:4000` and `NEXT_PUBLIC_WS_URL=ws://localhost:5000`.
+Set `NEXT_PUBLIC_API_URL` to <http://localhost:4000> and `NEXT_PUBLIC_WS_URL` to <ws://localhost:5000>.
 
 ### 6. Run services individually (no Docker)
 
@@ -275,7 +275,7 @@ pnpm --filter web dev
 
 ## API reference
 
-Base URL: `http://localhost:4000`
+Base URL: <http://localhost:4000>
 
 ### Health
 
@@ -386,7 +386,9 @@ stateDiagram-v2
   CANCELED --> [*]
 ```
 
-**Cancel guard (API layer):** If the latest `OrderEvent.status` is already `FILLED`, `REJECTED`, or `CANCELED`, the cancel request is rejected immediately — no Redis publish.
+### Cancel guard (API layer)
+
+If the latest `OrderEvent.status` is already `FILLED`, `REJECTED`, or `CANCELED`, the cancel request is rejected immediately — no Redis publish.
 
 ---
 
@@ -416,7 +418,8 @@ sequenceDiagram
   Browser->>API: Retry original request
 ```
 
-**Key points:**
+### Key points
+
 - All auth state lives in **httpOnly cookies** — not localStorage, not JS-accessible
 - Refresh tokens **rotate** on every use
 - WebSocket auth uses a **dedicated short-lived JWT** passed as a query parameter, verified against the same `JWT_ACCESS_SECRET`
@@ -474,6 +477,7 @@ sequenceDiagram
 ### Axios refresh interceptor
 
 On any `401`, `apps/web/lib/api.ts` automatically:
+
 1. Posts to `/auth/refresh` once (with cookies)
 2. Retries the original request
 3. On second failure — redirects to `/login`
@@ -508,6 +512,7 @@ Stage 4 (runner)  → Production image, node dist/index.js
 ```
 
 `docker-compose.yml` wires all services with:
+
 - Named volumes for PostgreSQL data persistence
 - Healthchecks on `postgres` and `redis` before dependent services start
 - Development bind-mounts for source hot-reload
