@@ -1,0 +1,35 @@
+{
+  "name": "events",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "generate": "prisma generate",
+    "migrate": "prisma migrate deploy",
+    "build": "pnpm run generate && tsc --noEmit false",
+    "start": "node dist/index.js",
+    "build:prod": "NODE_ENV=production pnpm install --frozen-lockfile && pnpm run build"
+  },
+  "prisma": {
+    "schema": "./prisma/schema.prisma"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.2.0",
+    "@prisma/client": "^7.2.0",
+    "@types/pg": "^8.11.10",
+    "pg": "^8.13.1",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^22.15.3",
+    "@types/ws": "^8.5.13",
+    "dotenv": "^16.4.5",
+    "ioredis": "^5.4.1",
+    "jsonwebtoken": "^9.0.2",
+    "typescript": "5.9.2",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "prisma": "^7.2.0",
+    "ts-node-dev": "^2.0.0"
+  }
+}

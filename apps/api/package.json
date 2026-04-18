@@ -1,0 +1,48 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "generate": "prisma generate",
+    "migrate": "prisma migrate deploy",
+    "build": "pnpm run generate && tsc --noEmit false",
+    "start": "node dist/index.js",
+    "build:prod": "NODE_ENV=production pnpm install --frozen-lockfile && pnpm run build",
+    "test": "vitest",
+    "test:ui": "vitest --ui"
+  },
+  "prisma": {
+    "schema": "./prisma/schema.prisma"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.2.0",
+    "@prisma/client": "^7.2.0",
+    "@types/pg": "^8.11.10",
+    "pg": "^8.13.1",
+    "@types/bcrypt": "^5.0.2",
+    "@types/cookie-parser": "^1.4.7",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^22.15.3",
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "express-rate-limit": "^8.2.1",
+    "ioredis": "^5.4.1",
+    "jsonwebtoken": "^9.0.2",
+    "typescript": "5.9.2",
+    "uuid": "^13.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@vitest/ui": "^4.0.16",
+    "prisma": "^7.2.0",
+    "ts-node-dev": "^2.0.0",
+    "vitest": "^4.0.16"
+  }
+}

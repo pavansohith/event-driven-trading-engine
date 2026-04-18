@@ -1,0 +1,48 @@
+// Prisma schema for trading platform database
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id              String         @id @default(cuid())
+  email           String         @unique
+  password        String
+  firstName       String
+  lastName        String
+  binanceApiKey   String         // Encrypted
+  binanceSecretKey String        // Encrypted
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  orderCommands   OrderCommand[]
+}
+
+model OrderCommand {
+  id        String       @id @default(cuid())
+  userId    String
+  symbol    String
+  side      String       // "BUY" or "SELL"
+  quantity  Float
+  price     Float?
+  type      String       // "MARKET" or "LIMIT"
+  status    String       @default("PENDING") // "PENDING", "PROCESSING", "COMPLETED", "FAILED"
+  createdAt DateTime     @default(now())
+  user      User         @relation(fields: [userId], references: [id])
+  events    OrderEvent[]
+}
+
+model OrderEvent {
+  id              String       @id @default(cuid())
+  orderCommandId  String
+  eventType       String       // "SUBMITTED", "EXECUTED", "FAILED", "CANCELLED"
+  status          String
+  message         String?
+  executedPrice   Float?
+  executedQuantity Float?
+  createdAt       DateTime     @default(now())
+  orderCommand    OrderCommand @relation(fields: [orderCommandId], references: [id])
+}
+

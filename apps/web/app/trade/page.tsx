@@ -1,0 +1,32 @@
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
+
+/**
+ * Redirect /trade to /trade/BTCUSDT
+ */
+export default function TradePage() {
+  const router = useRouter();
+  const { loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading) {
+      router.replace('/trade/BTCUSDT');
+    }
+  }, [router, loading]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900 dark:bg-gray-900">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-4 text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+}
