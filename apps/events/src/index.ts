@@ -1,4 +1,4 @@
-import { WebSocketServer, WebSocket } from 'ws';
+import { WebSocketServer, WebSocket, type VerifyClientCallbackSync } from 'ws';
 import http from 'http';
 import dotenv from 'dotenv';
 import Redis from 'ioredis';
@@ -43,16 +43,13 @@ const getAllowedOrigins = (): string[] => {
 
 const allowedOrigins = getAllowedOrigins();
 
-// WebSocket server attached to HTTP server with origin validation
-const wss = new WebSocketServer({ 
-  server,
-  verifyClient: (info) => {
+const verifyClient: VerifyClientCallbackSync = (info) => {
     const origin = info.origin;
     if (!origin) {
       // Allow connections without origin (like Postman or direct connections)
       return true;
     }
-    
+
     // Check if origin is in allowed list
     const isAllowed = allowedOrigins.some(allowedOrigin => {
       // Extract domain from origin (remove protocol)
@@ -60,13 +57,18 @@ const wss = new WebSocketServer({
       const allowedDomain = allowedOrigin.replace(/^https?:\/\//, '').replace(/\/$/, '');
       return originDomain === allowedDomain;
     });
-    
+
     if (!isAllowed) {
       console.warn(`WebSocket connection blocked from origin: ${origin}. Allowed origins: ${allowedOrigins.join(', ')}`);
     }
-    
+
     return isAllowed;
-  }
+  };
+
+// WebSocket server attached to HTTP server with origin validation
+const wss = new WebSocketServer({
+  server,
+  verifyClient,
 });
 
 // Map to maintain user connections: userId -> WebSocket

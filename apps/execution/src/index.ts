@@ -1,11 +1,11 @@
+// Load environment variables FIRST, before any other imports
 import dotenv from 'dotenv';
+dotenv.config();
+
 import Redis from 'ioredis';
 import { prisma } from './lib/prisma';
 import { decrypt } from './crypto';
 import { placeOrder, cancelOrder } from './binance';
-
-// Load environment variables
-dotenv.config();
 
 // Redis connection for subscribing to commands
 // REDIS_URL is required (no localhost fallback for production)
